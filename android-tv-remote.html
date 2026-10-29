@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>古典 Android TV 遙控器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #1c120c;
+    --bg-pattern: #2a1a10;
+    --brass-hi: #f6e2a1;
+    --brass: #c9a24a;
+    --brass-lo: #8a6420;
+    --wood-1: #6b2e17;
+    --wood-2: #3d150a;
+    --wood-3: #240b04;
+    --ivory-hi: #fffaf0;
+    --ivory: #efe3c8;
+    --ivory-lo: #c9b48a;
+    --ink: #3b2412;
+    --ruby: #b3122e;
+    --sepia-screen: #e9d9b4;
+    --serif-en: "Cinzel", "Cormorant Garamond", Georgia, serif;
+    --serif: "Cormorant Garamond", "Noto Serif TC", Georgia, "Times New Roman", serif;
+    --serif-tc: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+    --brass-grad: linear-gradient(145deg, var(--brass-hi), var(--brass) 30%, var(--brass-lo) 55%, #e9cf7f 75%, #a37b2c);
+    --ivory-grad: radial-gradient(circle at 35% 28%, var(--ivory-hi), var(--ivory) 55%, var(--ivory-lo));
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background-color: var(--bg-deep);
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(201,162,74,.12), transparent 60%),
+      radial-gradient(circle at 25% 25%, rgba(201,162,74,.06) 2px, transparent 3px),
+      radial-gradient(circle at 75% 75%, rgba(201,162,74,.06) 2px, transparent 3px);
+    background-size: 100% 100%, 36px 36px, 36px 36px;
+    color: var(--ivory);
+    font-family: var(--serif);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 40px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  header { text-align: center; margin-bottom: 22px; }
+  header h1 {
+    font-family: var(--serif-tc);
+    font-weight: 700;
+    font-size: clamp(22px, 4vw, 30px);
+    letter-spacing: .12em;
+    margin: 0;
+    background: var(--brass-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  header p {
+    margin: 6px 0 0;
+    font-family: var(--serif-en);
+    font-size: 12px;
+    letter-spacing: .35em;
+    color: var(--brass);
+  }
+
+  .stage {
+    display: flex;
+    gap: 44px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  /* ───────────── 古董電視 Vintage TV ───────────── */
+  .tv {
+    width: min(100%, 520px);
+    padding: 22px 22px 16px;
+    border-radius: 26px;
+    background:
+      repeating-linear-gradient(91deg, rgba(0,0,0,.10) 0 2px, transparent 2px 9px),
+      repeating-linear-gradient(89deg, rgba(255,210,160,.05) 0 1px, transparent 1px 13px),
+      linear-gradient(170deg, var(--wood-1), var(--wood-2) 65%, var(--wood-3));
+    box-shadow:
+      0 0 0 4px #1a0a04,
+      0 0 0 7px var(--brass-lo),
+      0 24px 50px rgba(0,0,0,.6),
+      inset 0 2px 0 rgba(255,220,180,.18);
+  }
+  .tv-bezel {
+    padding: 12px;
+    border-radius: 18px;
+    background: var(--brass-grad);
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,.35), 0 3px 8px rgba(0,0,0,.5);
+  }
+  .screen {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: 34px / 26px;
+    overflow: hidden;
+    background: #0d0a07;
+    box-shadow: inset 0 0 40px rgba(0,0,0,.9), inset 0 0 0 3px #120c07;
+  }
+  .screen-inner {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 45%, #f4e8c8, var(--sepia-screen) 55%, #b89a63);
+    color: var(--ink);
+    transition: transform .45s cubic-bezier(.6,0,.4,1), opacity .45s, filter .45s;
+    transform-origin: center;
+  }
+  .screen.off .screen-inner { transform: scale(1, .004); opacity: 0; filter: brightness(3); }
+  .screen::after { /* 掃描線 scanlines + 玻璃反光 */
+    content: "";
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,.07) 0 1px, transparent 1px 3px),
+      radial-gradient(ellipse at 30% 18%, rgba(255,255,255,.28), transparent 40%),
+      radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.45));
+  }
+  .screen-off-dot {
+    position: absolute; left: 50%; top: 50%;
+    width: 6px; height: 6px; margin: -3px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 12px 4px rgba(255,255,255,.7);
+    opacity: 0;
+  }
+  .screen.off .screen-off-dot { animation: dot-fade 1s ease-out .35s forwards; }
+  @keyframes dot-fade { 0% { opacity: 1; } 100% { opacity: 0; transform: scale(.2); } }
+
+  .view { position: absolute; inset: 0; padding: 7% 8%; display: none; }
+  .view.active { display: block; }
+
+  .view-title {
+    font-family: var(--serif-en);
+    font-size: clamp(11px, 2.4vw, 14px);
+    letter-spacing: .3em;
+    text-align: center;
+    color: #6b4a22;
+    margin: 0 0 4%;
+  }
+  .view-title::before, .view-title::after { content: " ❦ "; color: #a37b2c; }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4%;
+    height: 72%;
+  }
+  .tile {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border-radius: 8px;
+    background: rgba(255,250,235,.55);
+    border: 1.5px solid rgba(107,74,34,.35);
+    font-family: var(--serif-tc);
+    font-size: clamp(12px, 2.6vw, 16px);
+    color: var(--ink);
+    transition: transform .15s, box-shadow .15s, background .15s;
+  }
+  .tile .glyph { font-size: clamp(18px, 4.6vw, 30px); line-height: 1.1; color: #7a2a14; }
+  .tile small { font-family: var(--serif-en); font-size: clamp(8px, 1.6vw, 10px); letter-spacing: .15em; color: #7c6040; }
+  .tile.focus {
+    background: #fffaf0;
+    transform: scale(1.07);
+    border-color: var(--brass-lo);
+    box-shadow: 0 0 0 2px var(--brass), 0 6px 14px rgba(60,30,10,.35);
+  }
+
+  .playing {
+    height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: 6px;
+    font-family: var(--serif-tc);
+  }
+  .playing .big-glyph { font-size: clamp(42px, 11vw, 72px); color: #7a2a14; line-height: 1; }
+  .playing h2 { margin: 0; font-size: clamp(18px, 4vw, 26px); letter-spacing: .1em; }
+  .playing .sub { font-family: var(--serif); font-style: italic; font-size: clamp(12px, 2.4vw, 15px); color: #6b4a22; }
+  .progress {
+    width: 70%; height: 6px; margin-top: 10px;
+    border-radius: 3px;
+    background: rgba(107,74,34,.25);
+    overflow: hidden;
+  }
+  .progress > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--brass-lo), var(--brass)); }
+
+  .list { list-style: none; margin: 0; padding: 0; font-family: var(--serif-tc); font-size: clamp(12px, 2.5vw, 15px); }
+  .list li {
+    display: flex; justify-content: space-between;
+    padding: 2.2% 3%;
+    border-bottom: 1px dotted rgba(107,74,34,.4);
+  }
+  .list li.focus { background: rgba(255,250,235,.7); outline: 1.5px solid var(--brass); border-radius: 4px; }
+  .list li span:last-child { font-family: var(--serif); font-style: italic; color: #6b4a22; }
+
+  /* 疊加資訊 overlays */
+  .osd-vol {
+    position: absolute; right: 5%; top: 14%; bottom: 14%;
+    width: 34px; padding: 6px 0;
+    border-radius: 17px;
+    background: rgba(255,250,235,.88);
+    box-shadow: 0 0 0 1px rgba(107,74,34,.4), 0 4px 10px rgba(60,30,10,.3);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    opacity: 0; transition: opacity .25s;
+    font-family: var(--serif-en); font-size: 11px; color: var(--ink);
+  }
+  .osd-vol .bar {
+    flex: 1; width: 10px; border-radius: 5px;
+    background: rgba(59,36,18,.25);
+    position: relative; overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(59,36,18,.4);
+  }
+  .osd-vol .fill { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(0deg, var(--brass-lo), var(--brass-hi)); }
+  .osd-ch {
+    position: absolute; right: 6%; top: 6%;
+    font-family: var(--serif-en); font-weight: 700;
+    font-size: clamp(20px, 5vw, 34px);
+    color: #7a2a14;
+    text-shadow: 0 1px 0 rgba(255,255,255,.6);
+    opacity: 0; transition: opacity .25s;
+  }
+  .osd-toast {
+    position: absolute; left: 50%; bottom: 7%;
+    transform: translateX(-50%);
+    max-width: 86%;
+    padding: 6px 16px;
+    border-radius: 20px;
+    background: rgba(36,14,6,.85);
+    color: var(--ivory);
+    font-family: var(--serif-tc);
+    font-size: clamp(11px, 2.4vw, 14px);
+    letter-spacing: .06em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    border: 1px solid var(--brass-lo);
+    opacity: 0; transition: opacity .25s;
+  }
+  .osd-mute {
+    position: absolute; left: 6%; top: 6%;
+    font-family: var(--serif-tc); font-size: clamp(11px, 2.4vw, 14px);
+    color: #7a2a14; display: none;
+    align-items: center; gap: 4px;
+  }
+  .osd-mute.show { display: flex; }
+  .show-osd { opacity: 1 !important; }
+
+  .listening {
+    position: absolute; inset: 0;
+    display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    background: rgba(36,14,6,.82);
+    color: var(--ivory);
+    font-family: var(--serif-tc);
+    font-size: clamp(14px, 3vw, 18px);
+  }
+  .listening.show { display: flex; }
+  .waves { display: flex; gap: 6px; align-items: center; height: 40px; }
+  .waves i {
+    display: block; width: 6px; border-radius: 3px;
+    background: var(--brass-grad);
+    animation: wave 0.9s ease-in-out infinite;
+  }
+  .waves i:nth-child(2) { animation-delay: .15s; }
+  .waves i:nth-child(3) { animation-delay: .3s; }
+  .waves i:nth-child(4) { animation-delay: .45s; }
+  @keyframes wave { 0%,100% { height: 8px; } 50% { height: 38px; } }
+
+  .tv-base {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 14px; padding: 0 6px;
+  }
+  .grille {
+    flex: 1; height: 26px; margin-right: 18px;
+    border-radius: 6px;
+    background: repeating-linear-gradient(90deg, #1a0a04 0 3px, #5a2a14 3px 6px);
+    box-shadow: inset 0 0 0 2px var(--brass-lo);
+  }
+  .knobs { display: flex; gap: 12px; }
+  .knob {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--brass-grad);
+    box-shadow: 0 2px 4px rgba(0,0,0,.6), inset 0 0 0 4px rgba(0,0,0,.15);
+    position: relative;
+  }
+  .knob::after { content: ""; position: absolute; left: 50%; top: 4px; width: 2px; height: 9px; margin-left: -1px; background: #3b2412; border-radius: 1px; }
+  .tv-plate {
+    text-align: center; margin-top: 10px;
+    font-family: var(--serif-en); font-size: 11px; letter-spacing: .4em; color: var(--brass);
+  }
+
+  /* ───────────── 遙控器 Remote ───────────── */
+  .remote-wrap { display: flex; flex-direction: column; align-items: center; }
+  .remote {
+    position: relative;
+    width: 236px;
+    padding: 9px;
+    border-radius: 118px 118px 64px 64px / 90px 90px 50px 50px;
+    background: var(--brass-grad);
+    box-shadow: 0 30px 60px rgba(0,0,0,.65), 0 0 0 2px #1a0a04;
+  }
+  .remote-body {
+    position: relative;
+    border-radius: 110px 110px 56px 56px / 84px 84px 44px 44px;
+    padding: 30px 22px 26px;
+    background:
+      repeating-linear-gradient(93deg, rgba(0,0,0,.10) 0 2px, transparent 2px 8px),
+      repeating-linear-gradient(87deg, rgba(255,210,160,.05) 0 1px, transparent 1px 12px),
+      radial-gradient(ellipse at 30% 10%, rgba(255,200,150,.18), transparent 50%),
+      linear-gradient(165deg, var(--wood-1), var(--wood-2) 60%, var(--wood-3));
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,.45), inset 0 6px 14px rgba(255,210,170,.12), inset 0 -10px 20px rgba(0,0,0,.45);
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+
+  .row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+  .row.center { justify-content: center; gap: 14px; }
+
+  button {
+    font: inherit;
+    border: 0;
+    cursor: pointer;
+    color: var(--ink);
+    -webkit-user-select: none; user-select: none;
+    touch-action: manipulation;
+  }
+  button:focus-visible { outline: 2px solid var(--brass-hi); outline-offset: 3px; }
+
+  .btn-round {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: var(--ivory-grad);
+    box-shadow:
+      0 0 0 3px var(--brass),
+      0 0 0 4px #1a0a04,
+      0 4px 6px rgba(0,0,0,.55),
+      inset 0 -3px 4px rgba(120,90,40,.35);
+    display: grid; place-items: center;
+    transition: transform .06s, box-shadow .06s;
+  }
+  .btn-round svg { width: 22px; height: 22px; }
+  .btn-round.small { width: 40px; height: 40px; }
+  .btn-round.small svg { width: 19px; height: 19px; }
+  .btn-round.power { background: radial-gradient(circle at 35% 28%, #ff6b7d, var(--ruby) 55%, #5e0716); color: #fff3df; }
+  .btn-round.assistant { width: 54px; height: 54px; }
+  .btn-round.assistant svg { width: 26px; height: 26px; }
+
+  .pressed, button:active:not(.dpad-seg) {
+    transform: translateY(2px) scale(.97);
+    box-shadow:
+      0 0 0 3px var(--brass),
+      0 0 0 4px #1a0a04,
+      0 1px 2px rgba(0,0,0,.55),
+      inset 0 2px 5px rgba(80,50,20,.45);
+  }
+
+  .label {
+    display: block; margin-top: 5px;
+    font-family: var(--serif-tc);
+    font-size: 10px;
+    letter-spacing: .1em;
+    color: var(--brass-hi);
+    text-align: center;
+    text-shadow: 0 1px 1px rgba(0,0,0,.8);
+  }
+  .label em { font-family: var(--serif-en); font-style: normal; font-size: 8px; letter-spacing: .15em; color: var(--brass); display: block; }
+  .cell { display: flex; flex-direction: column; align-items: center; }
+
+  .jewel {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffd1d8, #8d0f25 60%, #3a0410);
+    box-shadow: 0 0 0 2px var(--brass), 0 0 0 3px #1a0a04;
+    transition: box-shadow .1s, background .1s;
+  }
+  .jewel.lit { background: radial-gradient(circle at 35% 30%, #fff, #ff4d6a 50%, #b3122e); box-shadow: 0 0 0 2px var(--brass), 0 0 12px 4px rgba(255,77,106,.8); }
+  .jewel.mic { background: radial-gradient(circle at 35% 30%, #fff, #ffe08a 50%, #c99a1d); box-shadow: 0 0 0 2px var(--brass), 0 0 12px 4px rgba(255,214,110,.8); }
+
+  .nameplate {
+    width: 100%;
+    text-align: center;
+    padding: 6px 0 4px;
+    border-top: 1px solid rgba(233,207,127,.5);
+    border-bottom: 1px solid rgba(233,207,127,.5);
+    position: relative;
+  }
+  .nameplate .brand {
+    font-family: var(--serif-en); font-weight: 700;
+    font-size: 15px; letter-spacing: .32em;
+    background: var(--brass-grad);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,.7));
+  }
+  .nameplate .flourish { display: block; font-size: 11px; color: var(--brass); letter-spacing: .5em; line-height: 1; }
+
+  /* 方向鍵 D-pad */
+  .dpad {
+    position: relative;
+    width: 168px; height: 168px;
+    border-radius: 50%;
+    padding: 8px;
+    background: var(--brass-grad);
+    box-shadow: 0 6px 12px rgba(0,0,0,.6), 0 0 0 2px #1a0a04, inset 0 0 0 2px rgba(255,240,200,.5);
+  }
+  .dpad-inner {
+    position: relative; width: 100%; height: 100%;
+    border-radius: 50%;
+    background: var(--ivory-grad);
+    box-shadow: inset 0 0 0 1px rgba(80,50,20,.4), inset 0 -4px 8px rgba(120,90,40,.35);
+    overflow: hidden;
+  }
+  .dpad-inner::before { /* 雕刻十字線 engraved dividers */
+    content: ""; position: absolute; inset: 0;
+    background:
+      linear-gradient(45deg, transparent calc(50% - .75px), rgba(80,50,20,.35) calc(50% - .75px), rgba(80,50,20,.35) calc(50% + .75px), transparent calc(50% + .75px)),
+      linear-gradient(-45deg, transparent calc(50% - .75px), rgba(80,50,20,.35) calc(50% - .75px), rgba(80,50,20,.35) calc(50% + .75px), transparent calc(50% + .75px));
+    pointer-events: none;
+    z-index: 1;
+  }
+  .dpad-seg {
+    position: absolute; inset: 0;
+    background: transparent;
+    display: flex;
+    font-size: 15px;
+    color: #6b4a22;
+    transition: background .08s;
+  }
+  .dpad-seg span { margin: 10px; line-height: 1; }
+  .dpad-seg.up    { clip-path: polygon(50% 50%, 0 0, 100% 0); justify-content: center; align-items: flex-start; }
+  .dpad-seg.down  { clip-path: polygon(50% 50%, 0 100%, 100% 100%); justify-content: center; align-items: flex-end; }
+  .dpad-seg.left  { clip-path: polygon(50% 50%, 0 0, 0 100%); justify-content: flex-start; align-items: center; }
+  .dpad-seg.right { clip-path: polygon(50% 50%, 100% 0, 100% 100%); justify-content: flex-end; align-items: center; }
+  .dpad-seg:active, .dpad-seg.pressed { background: rgba(120,80,30,.22); }
+  .dpad-ok {
+    position: absolute; left: 50%; top: 50%;
+    width: 64px; height: 64px; margin: -32px;
+    border-radius: 50%;
+    z-index: 2;
+    background: radial-gradient(circle at 35% 28%, #fff7e6, #e3d2ad 60%, #b69a66);
+    box-shadow: 0 0 0 3px var(--brass), 0 0 0 4px #1a0a04, 0 3px 6px rgba(0,0,0,.45), inset 0 -3px 4px rgba(120,90,40,.35);
+    font-family: var(--serif-en); font-weight: 700; font-size: 14px; letter-spacing: .1em;
+    color: #5a3818;
+  }
+
+  /* 音量／頻道 搖桿鍵 rockers */
+  .rocker {
+    width: 50px; height: 116px;
+    border-radius: 25px;
+    background: var(--ivory-grad);
+    box-shadow: 0 0 0 3px var(--brass), 0 0 0 4px #1a0a04, 0 5px 8px rgba(0,0,0,.55);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+  .rocker button {
+    flex: 1; background: transparent;
+    font-family: var(--serif-en); font-size: 22px; font-weight: 700;
+    color: #5a3818;
+  }
+  .rocker button:active, .rocker button.pressed { background: rgba(120,80,30,.22); transform: none; box-shadow: none; }
+  .rocker::after {
+    content: ""; position: absolute; left: 10px; right: 10px; top: 50%; height: 1px;
+    background: rgba(80,50,20,.4);
+  }
+  .rocker-col { display: flex; flex-direction: column; align-items: center; }
+
+  .mid-col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+
+  .divider {
+    width: 80%; height: 10px;
+    background:
+      radial-gradient(circle, var(--brass) 2px, transparent 2.5px) center / 10px 10px no-repeat,
+      linear-gradient(var(--brass), var(--brass)) left center / 42% 1px no-repeat,
+      linear-gradient(var(--brass), var(--brass)) right center / 42% 1px no-repeat;
+    opacity: .75;
+  }
+
+  .app-btn {
+    width: 82px; height: 32px;
+    border-radius: 16px;
+    background: var(--brass-grad);
+    box-shadow: 0 0 0 2px #1a0a04, 0 4px 6px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.5);
+    font-family: var(--serif-tc); font-weight: 700; font-size: 12px; letter-spacing: .1em;
+    color: #3b2412;
+    transition: transform .06s;
+  }
+  .app-btn:active, .app-btn.pressed { transform: translateY(2px); box-shadow: 0 0 0 2px #1a0a04, 0 1px 2px rgba(0,0,0,.55), inset 0 2px 4px rgba(0,0,0,.3); }
+
+  .remote-foot {
+    font-family: var(--serif-en);
+    font-size: 9px; letter-spacing: .4em;
+    color: var(--brass);
+    margin-top: 2px;
+  }
+
+  /* 說明區 legend */
+  .legend {
+    margin-top: 26px;
+    width: min(100%, 520px);
+    border: 1px solid rgba(201,162,74,.4);
+    border-radius: 12px;
+    padding: 14px 18px;
+    background: rgba(42,26,16,.6);
+    font-size: 14px;
+  }
+  .legend h3 {
+    margin: 0 0 8px; text-align: center;
+    font-family: var(--serif-tc); font-size: 15px; letter-spacing: .15em; color: var(--brass-hi);
+  }
+  .legend dl {
+    display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0;
+    font-family: var(--serif-tc); font-size: 13px;
+  }
+  .legend dt { color: var(--brass-hi); font-family: var(--serif-en); font-size: 12px; }
+  .legend dd { margin: 0; color: var(--ivory); }
+  kbd {
+    display: inline-block; padding: 0 6px; border-radius: 4px;
+    border: 1px solid var(--brass-lo); background: rgba(0,0,0,.25);
+    font-family: var(--serif-en); font-size: 11px;
+  }
+  .sound-toggle {
+    display: flex; justify-content: center; margin-top: 10px;
+    font-family: var(--serif-tc); font-size: 13px; color: var(--ivory); gap: 6px; align-items: center;
+  }
+
+  @media (max-width: 600px) {
+    .stage { gap: 30px; }
+    .tv-col { display: contents; }
+    .legend { order: 3; margin-top: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>古典 Android TV 遙控器</h1>
+  <p>VICTORIAN EDITION · MMXXVI</p>
+</header>
+
+<main class="stage">
+
+  <!-- ═════════ 古董電視 ═════════ -->
+  <section class="tv-col" aria-label="電視畫面 TV screen">
+    <div class="tv">
+      <div class="tv-bezel">
+        <div class="screen" id="screen">
+          <div class="screen-inner">
+
+            <!-- 首頁 Home -->
+            <div class="view active" id="view-home">
+              <p class="view-title">HOME</p>
+              <div class="tiles" id="tiles"></div>
+            </div>
+
+            <!-- 播放中 Playing -->
+            <div class="view" id="view-app">
+              <div class="playing">
+                <div class="big-glyph" id="app-glyph">❦</div>
+                <h2 id="app-name">—</h2>
+                <div class="sub" id="app-status">Now Playing</div>
+                <div class="progress"><div id="progress-fill"></div></div>
+              </div>
+            </div>
+
+            <!-- 節目表 Guide -->
+            <div class="view" id="view-guide">
+              <p class="view-title">PROGRAMME GUIDE</p>
+              <ul class="list" id="guide-list"></ul>
+            </div>
+
+            <!-- 訊號源 Input -->
+            <div class="view" id="view-input">
+              <p class="view-title">INPUT SOURCE</p>
+              <ul class="list" id="input-list"></ul>
+            </div>
+
+            <!-- 快速設定 Settings -->
+            <div class="view" id="view-settings">
+              <p class="view-title">SETTINGS</p>
+              <ul class="list" id="settings-list"></ul>
+            </div>
+
+            <div class="osd-mute" id="osd-mute" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>
+              靜音
+            </div>
+            <div class="osd-ch" id="osd-ch">CH 01</div>
+            <div class="osd-vol" id="osd-vol">
+              <span id="vol-num">30</span>
+              <div class="bar"><div class="fill" id="vol-fill"></div></div>
+              <span>VOL</span>
+            </div>
+            <div class="osd-toast" id="osd-toast" role="status" aria-live="polite"></div>
+
+            <div class="listening" id="listening">
+              <div class="waves"><i></i><i></i><i></i><i></i></div>
+              <div id="listening-text">請說話…</div>
+            </div>
+          </div>
+          <div class="screen-off-dot"></div>
+        </div>
+      </div>
+      <div class="tv-base">
+        <div class="grille"></div>
+        <div class="knobs"><div class="knob"></div><div class="knob" style="transform:rotate(60deg)"></div></div>
+      </div>
+      <div class="tv-plate">❧ ROYAL TELEVISOR ❧</div>
+    </div>
+
+    <div class="legend">
+      <h3>❦ 鍵盤快捷鍵 Keyboard Shortcuts ❦</h3>
+      <dl>
+        <dt><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd></dt><dd>方向鍵 D-pad</dd>
+        <dt><kbd>Enter</kbd></dt><dd>確定 OK</dd>
+        <dt><kbd>Esc</kbd> / <kbd>Backspace</kbd></dt><dd>返回 Back</dd>
+        <dt><kbd>H</kbd></dt><dd>首頁 Home</dd>
+        <dt><kbd>P</kbd></dt><dd>電源 Power</dd>
+        <dt><kbd>+</kbd> <kbd>−</kbd></dt><dd>音量 Volume</dd>
+        <dt><kbd>PgUp</kbd> <kbd>PgDn</kbd></dt><dd>頻道 Channel</dd>
+        <dt><kbd>M</kbd></dt><dd>靜音 Mute</dd>
+        <dt><kbd>Space</kbd></dt><dd>播放／暫停 Play / Pause</dd>
+        <dt><kbd>V</kbd></dt><dd>語音助理 Assistant</dd>
+      </dl>
+      <label class="sound-toggle"><input type="checkbox" id="sound" checked> 按鍵音效 Click sound</label>
+    </div>
+  </section>
+
+  <!-- ═════════ 遙控器 ═════════ -->
+  <section class="remote-wrap" aria-label="遙控器 Remote control">
+    <div class="remote">
+      <div class="remote-body">
+
+        <div class="row">
+          <div class="cell">
+            <button class="btn-round small power" data-key="power" aria-label="電源 Power">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v9"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg>
+            </button>
+            <span class="label">電源<em>POWER</em></span>
+          </div>
+          <div class="jewel" id="jewel" aria-hidden="true"></div>
+          <div class="cell">
+            <button class="btn-round small" data-key="input" aria-label="訊號源 Input">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M12 9v6M9 12l3 3 3-3"/><path d="M8 21h8"/></svg>
+            </button>
+            <span class="label">訊號源<em>INPUT</em></span>
+          </div>
+        </div>
+
+        <div class="nameplate">
+          <span class="flourish">❧ ✦ ❧</span>
+          <span class="brand">ANDROID TV</span>
+          <span class="flourish">~ ✧ ~</span>
+        </div>
+
+        <div class="cell">
+          <button class="btn-round assistant" data-key="assistant" aria-label="語音助理 Assistant">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+          </button>
+          <span class="label">語音助理<em>ASSISTANT</em></span>
+        </div>
+
+        <div class="dpad" role="group" aria-label="方向鍵 D-pad">
+          <div class="dpad-inner">
+            <button class="dpad-seg up" data-key="up" aria-label="上 Up"><span>▲</span></button>
+            <button class="dpad-seg down" data-key="down" aria-label="下 Down"><span>▼</span></button>
+            <button class="dpad-seg left" data-key="left" aria-label="左 Left"><span>◀</span></button>
+            <button class="dpad-seg right" data-key="right" aria-label="右 Right"><span>▶</span></button>
+            <button class="dpad-ok" data-key="ok" aria-label="確定 OK">OK</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="cell">
+            <button class="btn-round" data-key="back" aria-label="返回 Back">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+            </button>
+            <span class="label">返回<em>BACK</em></span>
+          </div>
+          <div class="cell">
+            <button class="btn-round" data-key="home" aria-label="首頁 Home">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+            </button>
+            <span class="label">首頁<em>HOME</em></span>
+          </div>
+          <div class="cell">
+            <button class="btn-round" data-key="guide" aria-label="節目表 Guide">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16M11 13h7M11 16h5"/></svg>
+            </button>
+            <span class="label">節目表<em>GUIDE</em></span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="rocker-col">
+            <div class="rocker" role="group" aria-label="音量 Volume">
+              <button data-key="volup" aria-label="音量加 Volume up">+</button>
+              <button data-key="voldown" aria-label="音量減 Volume down">−</button>
+            </div>
+            <span class="label">音量<em>VOL</em></span>
+          </div>
+
+          <div class="mid-col">
+            <div class="cell">
+              <button class="btn-round small" data-key="mute" aria-label="靜音 Mute">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>
+              </button>
+              <span class="label">靜音<em>MUTE</em></span>
+            </div>
+            <div class="cell">
+              <button class="btn-round small" data-key="settings" aria-label="設定 Settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+              </button>
+              <span class="label">設定<em>SETTINGS</em></span>
+            </div>
+          </div>
+
+          <div class="rocker-col">
+            <div class="rocker" role="group" aria-label="頻道 Channel">
+              <button data-key="chup" aria-label="頻道上 Channel up">∧</button>
+              <button data-key="chdown" aria-label="頻道下 Channel down">∨</button>
+            </div>
+            <span class="label">頻道<em>CH</em></span>
+          </div>
+        </div>
+
+        <div class="divider" aria-hidden="true"></div>
+
+        <div class="row center">
+          <button class="btn-round small" data-key="rew" aria-label="倒轉 Rewind">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 6v12L3 12zM21 6v12l-8-6z"/></svg>
+          </button>
+          <button class="btn-round" data-key="play" aria-label="播放／暫停 Play / Pause">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5v14l9-7z"/><rect x="15" y="5" width="2.6" height="14"/><rect x="19.4" y="5" width="2.6" height="14"/></svg>
+          </button>
+          <button class="btn-round small" data-key="ff" aria-label="快轉 Fast forward">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 6v12l8-6zM3 6v12l8-6z"/></svg>
+          </button>
+        </div>
+
+        <div class="row center">
+          <button class="app-btn" data-key="app1" aria-label="劇院 Theatre">劇院</button>
+          <button class="app-btn" data-key="app2" aria-label="樂廳 Music Hall">樂廳</button>
+        </div>
+
+        <div class="remote-foot">❦ EST. MMXXVI ❦</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  const TILES = [
+    { name: "電影", en: "CINEMA",  glyph: "❦" },
+    { name: "影集", en: "SERIES",  glyph: "✤" },
+    { name: "音樂", en: "MUSIC",   glyph: "♫" },
+    { name: "新聞", en: "GAZETTE", glyph: "✉" },
+    { name: "相簿", en: "GALLERY", glyph: "✿" },
+    { name: "遊戲", en: "GAMES",   glyph: "♛" },
+  ];
+  const APPS = {
+    app1: { name: "劇院", en: "THEATRE",    glyph: "♜" },
+    app2: { name: "樂廳", en: "MUSIC HALL", glyph: "♬" },
+  };
+  const INPUTS = ["HDMI 1", "HDMI 2", "HDMI 3", "AV 複合端子"];
+  const SETTINGS = [
+    ["畫面模式 Picture", "標準"],
+    ["音效模式 Sound", "劇院"],
+    ["睡眠計時 Sleep", "關閉"],
+    ["網路 Network", "已連線"],
+  ];
+  const PROGRAMMES = [
+    "晨間古典樂章", "午后茶敘", "維多利亞紀事", "歌劇院直播",
+    "黑白電影院", "博物館巡禮", "夜曲時光", "古董鑑賞",
+    "莎劇選粹", "皇家花園", "鋼琴獨奏會", "爵士年代",
+  ];
+
+  const state = {
+    on: true,
+    view: "home",
+    focus: 0,
+    listFocus: 0,
+    vol: 30,
+    muted: false,
+    ch: 1,
+    input: 0,
+    current: null,
+    playing: false,
+    progress: 0,
+  };
+
+  // ── 渲染 render ──
+  const tilesEl = $("tiles");
+  TILES.forEach((t, i) => {
+    const d = document.createElement("div");
+    d.className = "tile";
+    d.innerHTML = `<span class="glyph">${t.glyph}</span>${t.name}<small>${t.en}</small>`;
+    tilesEl.appendChild(d);
+  });
+
+  function renderList(el, rows) {
+    el.innerHTML = rows.map(([a, b], i) =>
+      `<li class="${i === state.listFocus ? "focus" : ""}"><span>${a}</span><span>${b}</span></li>`
+    ).join("");
+  }
+
+  function guideRows() {
+    const rows = [];
+    for (let k = 0; k < 4; k++) {
+      const ch = ((state.ch - 1 + k) % 99) + 1;
+      rows.push([`CH ${String(ch).padStart(2, "0")}　${PROGRAMMES[(ch - 1) % PROGRAMMES.length]}`, `${19 + k}:00`]);
+    }
+    return rows;
+  }
+
+  function render() {
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    $("view-" + state.view).classList.add("active");
+
+    [...tilesEl.children].forEach((t, i) => t.classList.toggle("focus", i === state.focus));
+
+    if (state.view === "guide") renderList($("guide-list"), guideRows());
+    if (state.view === "input") renderList($("input-list"), INPUTS.map((s, i) => [s, i === state.input ? "使用中" : ""]));
+    if (state.view === "settings") renderList($("settings-list"), SETTINGS);
+
+    if (state.view === "app" && state.current) {
+      $("app-glyph").textContent = state.current.glyph;
+      $("app-name").textContent = state.current.name;
+      $("app-status").textContent = state.playing ? "▶ 播放中 · Now Playing" : "❚❚ 已暫停 · Paused";
+      $("progress-fill").style.width = state.progress + "%";
+    }
+
+    $("osd-mute").classList.toggle("show", state.muted);
+    $("vol-num").textContent = state.muted ? "0" : state.vol;
+    $("vol-fill").style.height = (state.muted ? 0 : state.vol) + "%";
+    $("osd-ch").textContent = "CH " + String(state.ch).padStart(2, "0");
+  }
+
+  // ── 螢幕提示 OSD ──
+  const timers = {};
+  function flash(id, ms = 1600) {
+    const el = $(id);
+    el.classList.add("show-osd");
+    clearTimeout(timers[id]);
+    timers[id] = setTimeout(() => el.classList.remove("show-osd"), ms);
+  }
+  function toast(msg) {
+    $("osd-toast").textContent = msg;
+    flash("osd-toast", 1800);
+  }
+
+  // ── 播放進度 progress ticker ──
+  setInterval(() => {
+    if (state.on && state.view === "app" && state.playing) {
+      state.progress = Math.min(100, state.progress + 0.5);
+      if (state.progress >= 100) { state.playing = false; toast("播放完畢 · Fin"); }
+      render();
+    }
+  }, 200);
+
+  // ── 音效 click sound ──
+  let audioCtx;
+  function click(freq = 1800) {
+    if (!$("sound").checked) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const t = audioCtx.currentTime;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = "triangle";
+      o.frequency.setValueAtTime(freq, t);
+      o.frequency.exponentialRampToValueAtTime(freq * 0.4, t + 0.05);
+      g.gain.setValueAtTime(0.12, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+      o.connect(g).connect(audioCtx.destination);
+      o.start(t); o.stop(t + 0.08);
+    } catch (e) { /* 無音效支援時略過 */ }
+  }
+
+  // ── 指示燈 LED ──
+  const jewel = $("jewel");
+  function blink() {
+    jewel.classList.add("lit");
+    setTimeout(() => jewel.classList.remove("lit"), 140);
+  }
+
+  // ── 按鍵動作 actions ──
+  function moveFocus(dir) {
+    if (state.view === "home") {
+      const cols = 3, n = TILES.length;
+      let { focus } = state;
+      if (dir === "left")  focus = focus % cols === 0 ? focus + cols - 1 : focus - 1;
+      if (dir === "right") focus = focus % cols === cols - 1 ? focus - cols + 1 : focus + 1;
+      if (dir === "up")    focus = (focus - cols + n) % n;
+      if (dir === "down")  focus = (focus + cols) % n;
+      state.focus = focus;
+    } else if (["guide", "input", "settings"].includes(state.view)) {
+      const len = state.view === "input" ? INPUTS.length : state.view === "settings" ? SETTINGS.length : 4;
+      if (dir === "up")   state.listFocus = (state.listFocus - 1 + len) % len;
+      if (dir === "down") state.listFocus = (state.listFocus + 1) % len;
+    } else if (state.view === "app") {
+      if (dir === "left")  { state.progress = Math.max(0, state.progress - 5); toast("◀ 倒退 5%"); }
+      if (dir === "right") { state.progress = Math.min(100, state.progress + 5); toast("快進 5% ▶"); }
+    }
+  }
+
+  function openApp(app) {
+    state.current = app;
+    state.view = "app";
+    state.playing = true;
+    state.progress = 0;
+    toast(`開啟「${app.name}」· ${app.en}`);
+  }
+
+  function goView(view) {
+    state.view = state.view === view ? "home" : view;
+    state.listFocus = view === "input" ? state.input : 0;
+  }
+
+  let listenTimer;
+  function assistant() {
+    const box = $("listening");
+    clearTimeout(listenTimer);
+    $("listening-text").textContent = "請說話… Listening";
+    box.classList.add("show");
+    jewel.classList.add("mic");
+    listenTimer = setTimeout(() => {
+      $("listening-text").textContent = "（示範模式：未連接語音服務）";
+      listenTimer = setTimeout(() => { box.classList.remove("show"); jewel.classList.remove("mic"); }, 1400);
+    }, 1800);
+  }
+
+  function handle(key) {
+    blink();
+    click(key === "power" ? 900 : 1800);
+    if (navigator.vibrate) navigator.vibrate(10);
+
+    if (key === "power") {
+      state.on = !state.on;
+      $("screen").classList.toggle("off", !state.on);
+      if (state.on) { state.view = "home"; render(); toast("歡迎回來 · Welcome"); }
+      return;
+    }
+    if (!state.on) return;
+
+    switch (key) {
+      case "up": case "down": case "left": case "right":
+        moveFocus(key); break;
+      case "ok":
+        if (state.view === "home") openApp(TILES[state.focus]);
+        else if (state.view === "app") { state.playing = !state.playing; }
+        else if (state.view === "input") { state.input = state.listFocus; toast("切換至 " + INPUTS[state.input]); state.view = "home"; }
+        else if (state.view === "guide") { state.ch = ((state.ch - 1 + state.listFocus) % 99) + 1; toast("轉台至 " + PROGRAMMES[(state.ch - 1) % PROGRAMMES.length]); flash("osd-ch"); state.view = "home"; }
+        else if (state.view === "settings") { toast(SETTINGS[state.listFocus][0] + "（示範）"); }
+        break;
+      case "back":
+        if (state.view === "home") toast("已在首頁 · Home");
+        else state.view = "home";
+        break;
+      case "home":
+        state.view = "home"; toast("首頁 · Home"); break;
+      case "guide":    goView("guide"); break;
+      case "input":    goView("input"); break;
+      case "settings": goView("settings"); break;
+      case "volup":   state.muted = false; state.vol = Math.min(100, state.vol + 5); flash("osd-vol"); break;
+      case "voldown": state.muted = false; state.vol = Math.max(0, state.vol - 5); flash("osd-vol"); break;
+      case "mute":    state.muted = !state.muted; flash("osd-vol"); toast(state.muted ? "靜音 · Muted" : "取消靜音 · Unmuted"); break;
+      case "chup":    state.ch = state.ch % 99 + 1; flash("osd-ch"); break;
+      case "chdown":  state.ch = (state.ch + 97) % 99 + 1; flash("osd-ch"); break;
+      case "play":
+        if (state.view === "app") state.playing = !state.playing;
+        else toast("請先選擇節目 · Select a title");
+        break;
+      case "rew":
+        if (state.view === "app") { state.progress = Math.max(0, state.progress - 10); toast("◀◀ 倒轉"); } break;
+      case "ff":
+        if (state.view === "app") { state.progress = Math.min(100, state.progress + 10); toast("快轉 ▶▶"); } break;
+      case "app1": case "app2":
+        openApp(APPS[key]); break;
+      case "assistant":
+        assistant(); break;
+    }
+    render();
+  }
+
+  // ── 事件綁定 events ──
+  document.querySelectorAll("[data-key]").forEach(btn => {
+    btn.addEventListener("click", () => handle(btn.dataset.key));
+  });
+
+  const KEYMAP = {
+    ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
+    Enter: "ok", Escape: "back", Backspace: "back",
+    h: "home", H: "home", p: "power", P: "power",
+    "+": "volup", "=": "volup", "-": "voldown", "_": "voldown",
+    PageUp: "chup", PageDown: "chdown",
+    m: "mute", M: "mute", " ": "play", v: "assistant", V: "assistant",
+    g: "guide", G: "guide", i: "input", I: "input",
+  };
+  document.addEventListener("keydown", (e) => {
+    if (e.target.matches("input")) return;
+    if (e.target.matches("button") && (e.key === "Enter" || e.key === " ")) return; // 讓聚焦中的按鈕自行處理
+    const key = KEYMAP[e.key];
+    if (!key) return;
+    e.preventDefault();
+    const btn = document.querySelector(`[data-key="${key}"]`);
+    if (btn) { btn.classList.add("pressed"); setTimeout(() => btn.classList.remove("pressed"), 120); }
+    handle(key);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
