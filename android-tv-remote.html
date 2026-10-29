@@ -136,69 +136,24 @@
   .screen.off .screen-off-dot { animation: dot-fade 1s ease-out .35s forwards; }
   @keyframes dot-fade { 0% { opacity: 1; } 100% { opacity: 0; transform: scale(.2); } }
 
-  .view { position: absolute; inset: 0; padding: 7% 8%; display: none; }
-  .view.active { display: block; }
+  .screen.standby .screen-inner { filter: brightness(.5) sepia(.5); }
 
-  .view-title {
-    font-family: var(--serif-en);
-    font-size: clamp(11px, 2.4vw, 14px);
-    letter-spacing: .3em;
-    text-align: center;
-    color: #6b4a22;
-    margin: 0 0 4%;
-  }
-  .view-title::before, .view-title::after { content: " ❦ "; color: #a37b2c; }
-
-  .tiles {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4%;
-    height: 72%;
-  }
-  .tile {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    border-radius: 8px;
-    background: rgba(255,250,235,.55);
-    border: 1.5px solid rgba(107,74,34,.35);
-    font-family: var(--serif-tc);
-    font-size: clamp(12px, 2.6vw, 16px);
-    color: var(--ink);
-    transition: transform .15s, box-shadow .15s, background .15s;
-  }
-  .tile .glyph { font-size: clamp(18px, 4.6vw, 30px); line-height: 1.1; color: #7a2a14; }
-  .tile small { font-family: var(--serif-en); font-size: clamp(8px, 1.6vw, 10px); letter-spacing: .15em; color: #7c6040; }
-  .tile.focus {
-    background: #fffaf0;
-    transform: scale(1.07);
-    border-color: var(--brass-lo);
-    box-shadow: 0 0 0 2px var(--brass), 0 6px 14px rgba(60,30,10,.35);
-  }
-
-  .playing {
-    height: 100%;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  .view {
+    position: absolute; inset: 0;
+    padding: 8% 10%;
+    display: none;
+    flex-direction: column; align-items: center; justify-content: center;
     text-align: center; gap: 6px;
     font-family: var(--serif-tc);
   }
-  .playing .big-glyph { font-size: clamp(42px, 11vw, 72px); color: #7a2a14; line-height: 1; }
-  .playing h2 { margin: 0; font-size: clamp(18px, 4vw, 26px); letter-spacing: .1em; }
-  .playing .sub { font-family: var(--serif); font-style: italic; font-size: clamp(12px, 2.4vw, 15px); color: #6b4a22; }
-  .progress {
-    width: 70%; height: 6px; margin-top: 10px;
-    border-radius: 3px;
-    background: rgba(107,74,34,.25);
-    overflow: hidden;
-  }
-  .progress > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--brass-lo), var(--brass)); }
-
-  .list { list-style: none; margin: 0; padding: 0; font-family: var(--serif-tc); font-size: clamp(12px, 2.5vw, 15px); }
-  .list li {
-    display: flex; justify-content: space-between;
-    padding: 2.2% 3%;
-    border-bottom: 1px dotted rgba(107,74,34,.4);
-  }
-  .list li.focus { background: rgba(255,250,235,.7); outline: 1.5px solid var(--brass); border-radius: 4px; }
-  .list li span:last-child { font-family: var(--serif); font-style: italic; color: #6b4a22; }
+  .view.active { display: flex; }
+  .view .big-glyph { font-size: clamp(40px, 10vw, 64px); color: #7a2a14; line-height: 1; }
+  .view h2 { margin: 0; font-size: clamp(17px, 3.8vw, 24px); letter-spacing: .08em; }
+  .view .sub { font-family: var(--serif); font-size: clamp(12px, 2.4vw, 15px); color: #6b4a22; line-height: 1.5; }
+  .view .sub code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .9em; background: rgba(107,74,34,.12); padding: 0 4px; border-radius: 3px; }
+  .view .meta { font-family: var(--serif-en); font-size: clamp(9px, 1.8vw, 11px); letter-spacing: .25em; color: #8a6a3a; }
+  .view .spin { display: inline-block; animation: spin 2.4s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* 疊加資訊 overlays */
   .osd-vol {
@@ -241,35 +196,6 @@
     border: 1px solid var(--brass-lo);
     opacity: 0; transition: opacity .25s;
   }
-  .osd-mute {
-    position: absolute; left: 6%; top: 6%;
-    font-family: var(--serif-tc); font-size: clamp(11px, 2.4vw, 14px);
-    color: #7a2a14; display: none;
-    align-items: center; gap: 4px;
-  }
-  .osd-mute.show { display: flex; }
-  .show-osd { opacity: 1 !important; }
-
-  .listening {
-    position: absolute; inset: 0;
-    display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
-    background: rgba(36,14,6,.82);
-    color: var(--ivory);
-    font-family: var(--serif-tc);
-    font-size: clamp(14px, 3vw, 18px);
-  }
-  .listening.show { display: flex; }
-  .waves { display: flex; gap: 6px; align-items: center; height: 40px; }
-  .waves i {
-    display: block; width: 6px; border-radius: 3px;
-    background: var(--brass-grad);
-    animation: wave 0.9s ease-in-out infinite;
-  }
-  .waves i:nth-child(2) { animation-delay: .15s; }
-  .waves i:nth-child(3) { animation-delay: .3s; }
-  .waves i:nth-child(4) { animation-delay: .45s; }
-  @keyframes wave { 0%,100% { height: 8px; } 50% { height: 38px; } }
-
   .tv-base {
     display: flex; justify-content: space-between; align-items: center;
     margin-top: 14px; padding: 0 6px;
@@ -494,40 +420,81 @@
     margin-top: 2px;
   }
 
-  /* 說明區 legend */
-  .legend {
+  /* 連線設定面板 connection panel */
+  .panel {
     margin-top: 26px;
     width: min(100%, 520px);
     border: 1px solid rgba(201,162,74,.4);
     border-radius: 12px;
-    padding: 14px 18px;
+    padding: 16px 18px;
     background: rgba(42,26,16,.6);
+    font-family: var(--serif-tc);
     font-size: 14px;
   }
-  .legend h3 {
-    margin: 0 0 8px; text-align: center;
-    font-family: var(--serif-tc); font-size: 15px; letter-spacing: .15em; color: var(--brass-hi);
+  .panel h3 {
+    margin: 0 0 10px; text-align: center;
+    font-size: 15px; letter-spacing: .15em; color: var(--brass-hi);
   }
-  .legend dl {
-    display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0;
-    font-family: var(--serif-tc); font-size: 13px;
+  .msg {
+    margin: 0 0 12px; padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(0,0,0,.25);
+    border-left: 3px solid var(--brass);
+    font-size: 13px; line-height: 1.5;
   }
-  .legend dt { color: var(--brass-hi); font-family: var(--serif-en); font-size: 12px; }
-  .legend dd { margin: 0; color: var(--ivory); }
+  .msg.error { border-left-color: #ff6b7d; color: #ffd5da; }
+  .msg.ok { border-left-color: #8fd18f; }
+  .panel form { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin-bottom: 12px; }
+  .panel form[hidden] { display: none; }
+  .panel label { flex: 1 1 180px; display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--brass-hi); letter-spacing: .05em; }
+  .panel input[type=text] {
+    font: 15px var(--serif);
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--brass-lo);
+    background: var(--ivory);
+    color: var(--ink);
+    width: 100%;
+    min-width: 0;
+  }
+  .panel input[type=text]:focus { outline: 2px solid var(--brass-hi); outline-offset: 1px; }
+  #code { letter-spacing: .4em; text-transform: uppercase; font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .brass-btn {
+    padding: 9px 16px;
+    border-radius: 18px;
+    background: var(--brass-grad);
+    box-shadow: 0 0 0 1px #1a0a04, 0 3px 5px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.5);
+    font-family: var(--serif-tc); font-weight: 700; font-size: 13px; letter-spacing: .08em;
+    color: #3b2412;
+    white-space: nowrap;
+  }
+  .brass-btn:active { transform: translateY(1px); }
+  .brass-btn:disabled { opacity: .55; cursor: wait; }
+  .panel details { border-top: 1px dotted rgba(201,162,74,.4); padding: 8px 0 0; margin-top: 8px; }
+  .panel summary { cursor: pointer; color: var(--brass-hi); font-size: 13px; letter-spacing: .08em; padding-bottom: 8px; }
+  .panel .hint { font-size: 12px; color: #cdbb93; margin: 0 0 10px; line-height: 1.6; }
+  .app-row { display: grid; grid-template-columns: 1fr 2fr; gap: 6px; margin-bottom: 6px; }
+  .panel dl {
+    display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0 0 6px;
+    font-size: 13px;
+  }
+  .panel dt { color: var(--brass-hi); }
+  .panel dd { margin: 0; color: var(--ivory); }
   kbd {
     display: inline-block; padding: 0 6px; border-radius: 4px;
     border: 1px solid var(--brass-lo); background: rgba(0,0,0,.25);
     font-family: var(--serif-en); font-size: 11px;
   }
-  .sound-toggle {
+  .panel .sound-toggle {
+    flex-direction: row;
     display: flex; justify-content: center; margin-top: 10px;
-    font-family: var(--serif-tc); font-size: 13px; color: var(--ivory); gap: 6px; align-items: center;
+    font-size: 13px; color: var(--ivory); gap: 6px; align-items: center;
   }
 
   @media (max-width: 600px) {
     .stage { gap: 30px; }
     .tv-col { display: contents; }
-    .legend { order: 3; margin-top: 0; }
+    .panel { order: 3; margin-top: 0; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
@@ -543,63 +510,54 @@
 
 <main class="stage">
 
-  <!-- ═════════ 古董電視 ═════════ -->
-  <section class="tv-col" aria-label="電視畫面 TV screen">
+  <!-- ═════════ 古董電視（狀態顯示） ═════════ -->
+  <section class="tv-col" aria-label="電視狀態 TV status">
     <div class="tv">
       <div class="tv-bezel">
         <div class="screen" id="screen">
           <div class="screen-inner">
 
-            <!-- 首頁 Home -->
-            <div class="view active" id="view-home">
-              <p class="view-title">HOME</p>
-              <div class="tiles" id="tiles"></div>
+            <div class="view active" id="view-nobridge">
+              <div class="big-glyph">✉</div>
+              <h2>找不到橋接程式</h2>
+              <div class="sub">請先在家裡的電腦執行 <code>python tv_bridge.py</code>，<br>再用它顯示的網址開啟本頁。</div>
+              <div class="meta">BRIDGE NOT FOUND</div>
             </div>
 
-            <!-- 播放中 Playing -->
-            <div class="view" id="view-app">
-              <div class="playing">
-                <div class="big-glyph" id="app-glyph">❦</div>
-                <h2 id="app-name">—</h2>
-                <div class="sub" id="app-status">Now Playing</div>
-                <div class="progress"><div id="progress-fill"></div></div>
-              </div>
+            <div class="view" id="view-setup">
+              <div class="big-glyph">❦</div>
+              <h2>尚未配對電視</h2>
+              <div class="sub">請在下方輸入電視的 IP 位址，<br>按「開始配對」。</div>
+              <div class="meta">AWAITING PAIRING</div>
             </div>
 
-            <!-- 節目表 Guide -->
-            <div class="view" id="view-guide">
-              <p class="view-title">PROGRAMME GUIDE</p>
-              <ul class="list" id="guide-list"></ul>
+            <div class="view" id="view-pairing">
+              <div class="big-glyph">✧</div>
+              <h2>請看電視上的配對碼</h2>
+              <div class="sub">在下方輸入電視顯示的 6 碼配對碼。</div>
+              <div class="meta">ENTER PAIRING CODE</div>
             </div>
 
-            <!-- 訊號源 Input -->
-            <div class="view" id="view-input">
-              <p class="view-title">INPUT SOURCE</p>
-              <ul class="list" id="input-list"></ul>
+            <div class="view" id="view-connecting">
+              <div class="big-glyph"><span class="spin">✤</span></div>
+              <h2>連線中…</h2>
+              <div class="sub" id="connecting-host">—</div>
+              <div class="meta">CONNECTING</div>
             </div>
 
-            <!-- 快速設定 Settings -->
-            <div class="view" id="view-settings">
-              <p class="view-title">SETTINGS</p>
-              <ul class="list" id="settings-list"></ul>
+            <div class="view" id="view-connected">
+              <div class="big-glyph" id="dev-glyph">♛</div>
+              <h2 id="dev-name">Android TV</h2>
+              <div class="sub" id="dev-state">—</div>
+              <div class="meta" id="dev-host">CONNECTED</div>
             </div>
 
-            <div class="osd-mute" id="osd-mute" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>
-              靜音
-            </div>
-            <div class="osd-ch" id="osd-ch">CH 01</div>
             <div class="osd-vol" id="osd-vol">
-              <span id="vol-num">30</span>
+              <span id="vol-num">—</span>
               <div class="bar"><div class="fill" id="vol-fill"></div></div>
               <span>VOL</span>
             </div>
             <div class="osd-toast" id="osd-toast" role="status" aria-live="polite"></div>
-
-            <div class="listening" id="listening">
-              <div class="waves"><i></i><i></i><i></i><i></i></div>
-              <div id="listening-text">請說話…</div>
-            </div>
           </div>
           <div class="screen-off-dot"></div>
         </div>
@@ -611,20 +569,57 @@
       <div class="tv-plate">❧ ROYAL TELEVISOR ❧</div>
     </div>
 
-    <div class="legend">
-      <h3>❦ 鍵盤快捷鍵 Keyboard Shortcuts ❦</h3>
-      <dl>
-        <dt><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd></dt><dd>方向鍵 D-pad</dd>
-        <dt><kbd>Enter</kbd></dt><dd>確定 OK</dd>
-        <dt><kbd>Esc</kbd> / <kbd>Backspace</kbd></dt><dd>返回 Back</dd>
-        <dt><kbd>H</kbd></dt><dd>首頁 Home</dd>
-        <dt><kbd>P</kbd></dt><dd>電源 Power</dd>
-        <dt><kbd>+</kbd> <kbd>−</kbd></dt><dd>音量 Volume</dd>
-        <dt><kbd>PgUp</kbd> <kbd>PgDn</kbd></dt><dd>頻道 Channel</dd>
-        <dt><kbd>M</kbd></dt><dd>靜音 Mute</dd>
-        <dt><kbd>Space</kbd></dt><dd>播放／暫停 Play / Pause</dd>
-        <dt><kbd>V</kbd></dt><dd>語音助理 Assistant</dd>
-      </dl>
+    <div class="panel">
+      <h3>❦ 連線設定 Connection ❦</h3>
+      <p class="msg" id="msg" role="status" aria-live="polite">正在尋找橋接程式…</p>
+
+      <form id="form-setup" autocomplete="off">
+        <label>電視 IP 位址 (TV IP address)
+          <input type="text" id="ip" inputmode="decimal" placeholder="例如 192.168.1.50" spellcheck="false">
+        </label>
+        <button class="brass-btn" type="submit">開始配對</button>
+      </form>
+
+      <form id="form-pair" autocomplete="off" hidden>
+        <label>配對碼 (Pairing code)
+          <input type="text" id="code" maxlength="6" placeholder="6 碼" spellcheck="false" autocapitalize="characters">
+        </label>
+        <button class="brass-btn" type="submit">確認配對</button>
+      </form>
+
+      <details>
+        <summary>自訂捷徑鍵 App shortcuts</summary>
+        <p class="hint">遙控器下方兩顆金色按鍵會開啟這裡設定的 App。連結可以填網址（例如 <code>https://www.youtube.com</code>）或 App 套件名稱 (package name)，例如 <code>com.netflix.ninja</code>。</p>
+        <div class="app-row"><input type="text" id="app1-name" aria-label="捷徑一名稱"><input type="text" id="app1-link" aria-label="捷徑一連結" spellcheck="false"></div>
+        <div class="app-row"><input type="text" id="app2-name" aria-label="捷徑二名稱"><input type="text" id="app2-link" aria-label="捷徑二連結" spellcheck="false"></div>
+        <button class="brass-btn" type="button" id="save-apps">儲存捷徑</button>
+      </details>
+
+      <details>
+        <summary>傳送文字到電視 Send text</summary>
+        <p class="hint">先在電視上點開搜尋框或輸入框，再從這裡送出文字。</p>
+        <form id="form-text" autocomplete="off">
+          <label>文字 (Text)<input type="text" id="text"></label>
+          <button class="brass-btn" type="submit">送出</button>
+        </form>
+      </details>
+
+      <details>
+        <summary>鍵盤快捷鍵 Keyboard shortcuts</summary>
+        <dl>
+          <dt><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd></dt><dd>方向鍵 D-pad（可按住連續）</dd>
+          <dt><kbd>Enter</kbd></dt><dd>確定 OK</dd>
+          <dt><kbd>Esc</kbd> / <kbd>Backspace</kbd></dt><dd>返回 Back</dd>
+          <dt><kbd>H</kbd></dt><dd>首頁 Home</dd>
+          <dt><kbd>P</kbd></dt><dd>電源 Power</dd>
+          <dt><kbd>+</kbd> <kbd>−</kbd></dt><dd>音量 Volume</dd>
+          <dt><kbd>PgUp</kbd> <kbd>PgDn</kbd></dt><dd>頻道 Channel</dd>
+          <dt><kbd>M</kbd></dt><dd>靜音 Mute</dd>
+          <dt><kbd>Space</kbd></dt><dd>播放／暫停 Play / Pause</dd>
+          <dt><kbd>G</kbd> / <kbd>I</kbd> / <kbd>V</kbd></dt><dd>節目表 Guide／訊號源 Input／語音助理 Assistant</dd>
+        </dl>
+      </details>
+
       <label class="sound-toggle"><input type="checkbox" id="sound" checked> 按鍵音效 Click sound</label>
     </div>
   </section>
@@ -752,98 +747,75 @@
   </section>
 
 </main>
-
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);
 
-  const TILES = [
-    { name: "電影", en: "CINEMA",  glyph: "❦" },
-    { name: "影集", en: "SERIES",  glyph: "✤" },
-    { name: "音樂", en: "MUSIC",   glyph: "♫" },
-    { name: "新聞", en: "GAZETTE", glyph: "✉" },
-    { name: "相簿", en: "GALLERY", glyph: "✿" },
-    { name: "遊戲", en: "GAMES",   glyph: "♛" },
-  ];
-  const APPS = {
-    app1: { name: "劇院", en: "THEATRE",    glyph: "♜" },
-    app2: { name: "樂廳", en: "MUSIC HALL", glyph: "♬" },
+  const LABELS = {
+    power: "電源", input: "訊號源", assistant: "語音助理",
+    up: "▲", down: "▼", left: "◀", right: "▶", ok: "確定",
+    back: "返回", home: "首頁", guide: "節目表", settings: "設定",
+    volup: "音量 +", voldown: "音量 −", mute: "靜音",
+    chup: "頻道 ∧", chdown: "頻道 ∨",
+    rew: "◀◀ 倒轉", play: "▶❚❚ 播放／暫停", ff: "快轉 ▶▶",
   };
-  const INPUTS = ["HDMI 1", "HDMI 2", "HDMI 3", "AV 複合端子"];
-  const SETTINGS = [
-    ["畫面模式 Picture", "標準"],
-    ["音效模式 Sound", "劇院"],
-    ["睡眠計時 Sleep", "關閉"],
-    ["網路 Network", "已連線"],
-  ];
-  const PROGRAMMES = [
-    "晨間古典樂章", "午后茶敘", "維多利亞紀事", "歌劇院直播",
-    "黑白電影院", "博物館巡禮", "夜曲時光", "古董鑑賞",
-    "莎劇選粹", "皇家花園", "鋼琴獨奏會", "爵士年代",
-  ];
-
-  const state = {
-    on: true,
-    view: "home",
-    focus: 0,
-    listFocus: 0,
-    vol: 30,
-    muted: false,
-    ch: 1,
-    input: 0,
-    current: null,
-    playing: false,
-    progress: 0,
+  const REPEATABLE = new Set(["up", "down", "left", "right", "volup", "voldown", "chup", "chdown"]);
+  const DEFAULT_APPS = {
+    app1: { name: "YouTube", link: "https://www.youtube.com" },
+    app2: { name: "Netflix", link: "https://www.netflix.com/title" },
   };
 
-  // ── 渲染 render ──
-  const tilesEl = $("tiles");
-  TILES.forEach((t, i) => {
-    const d = document.createElement("div");
-    d.className = "tile";
-    d.innerHTML = `<span class="glyph">${t.glyph}</span>${t.name}<small>${t.en}</small>`;
-    tilesEl.appendChild(d);
+  // ── 捷徑設定（存在這台裝置的瀏覽器） ──
+  let apps = structuredClone(DEFAULT_APPS);
+  try {
+    const saved = JSON.parse(localStorage.getItem("atv-apps") || "null");
+    if (saved && saved.app1 && saved.app2) apps = saved;
+  } catch (e) { /* 無法讀取時使用預設值 */ }
+
+  function renderApps() {
+    for (const k of ["app1", "app2"]) {
+      const btn = document.querySelector(`[data-key="${k}"]`);
+      btn.textContent = apps[k].name || "—";
+      btn.setAttribute("aria-label", `開啟 ${apps[k].name}`);
+      $(k + "-name").value = apps[k].name;
+      $(k + "-link").value = apps[k].link;
+    }
+  }
+  $("save-apps").addEventListener("click", () => {
+    for (const k of ["app1", "app2"]) {
+      apps[k] = { name: $(k + "-name").value.trim(), link: $(k + "-link").value.trim() };
+    }
+    try { localStorage.setItem("atv-apps", JSON.stringify(apps)); } catch (e) { /* 無痕模式等情況存不了 */ }
+    renderApps();
+    setMsg("捷徑已儲存。", "ok");
   });
+  renderApps();
 
-  function renderList(el, rows) {
-    el.innerHTML = rows.map(([a, b], i) =>
-      `<li class="${i === state.listFocus ? "focus" : ""}"><span>${a}</span><span>${b}</span></li>`
-    ).join("");
-  }
-
-  function guideRows() {
-    const rows = [];
-    for (let k = 0; k < 4; k++) {
-      const ch = ((state.ch - 1 + k) % 99) + 1;
-      rows.push([`CH ${String(ch).padStart(2, "0")}　${PROGRAMMES[(ch - 1) % PROGRAMMES.length]}`, `${19 + k}:00`]);
+  // ── 與橋接程式溝通 ──
+  async function api(path, body) {
+    try {
+      const res = await fetch(path, body === undefined ? {} : {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      return await res.json();
+    } catch (e) {
+      return { ok: false, offline: true, error: "連不到橋接程式，請確認電腦上的 tv_bridge.py 還在執行。" };
     }
-    return rows;
   }
 
-  function render() {
-    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-    $("view-" + state.view).classList.add("active");
-
-    [...tilesEl.children].forEach((t, i) => t.classList.toggle("focus", i === state.focus));
-
-    if (state.view === "guide") renderList($("guide-list"), guideRows());
-    if (state.view === "input") renderList($("input-list"), INPUTS.map((s, i) => [s, i === state.input ? "使用中" : ""]));
-    if (state.view === "settings") renderList($("settings-list"), SETTINGS);
-
-    if (state.view === "app" && state.current) {
-      $("app-glyph").textContent = state.current.glyph;
-      $("app-name").textContent = state.current.name;
-      $("app-status").textContent = state.playing ? "▶ 播放中 · Now Playing" : "❚❚ 已暫停 · Paused";
-      $("progress-fill").style.width = state.progress + "%";
-    }
-
-    $("osd-mute").classList.toggle("show", state.muted);
-    $("vol-num").textContent = state.muted ? "0" : state.vol;
-    $("vol-fill").style.height = (state.muted ? 0 : state.vol) + "%";
-    $("osd-ch").textContent = "CH " + String(state.ch).padStart(2, "0");
+  function setMsg(text, kind = "") {
+    const el = $("msg");
+    el.textContent = text;
+    el.className = "msg" + (kind ? " " + kind : "");
   }
 
-  // ── 螢幕提示 OSD ──
+  // ── 螢幕狀態 ──
+  function showView(name) {
+    document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + name));
+  }
+
   const timers = {};
   function flash(id, ms = 1600) {
     const el = $(id);
@@ -851,19 +823,117 @@
     clearTimeout(timers[id]);
     timers[id] = setTimeout(() => el.classList.remove("show-osd"), ms);
   }
-  function toast(msg) {
+  function toast(msg, ms) {
     $("osd-toast").textContent = msg;
-    flash("osd-toast", 1800);
+    flash("osd-toast", ms || 1200);
   }
 
-  // ── 播放進度 progress ticker ──
-  setInterval(() => {
-    if (state.on && state.view === "app" && state.playing) {
-      state.progress = Math.min(100, state.progress + 0.5);
-      if (state.progress >= 100) { state.playing = false; toast("播放完畢 · Fin"); }
-      render();
+  let last = null;
+  let lastVolKey = "";
+  let busy = false;   // 配對進行中時暫停覆寫訊息
+
+  function applyStatus(st) {
+    last = st;
+    const screen = $("screen");
+    screen.classList.toggle("standby", !!(st.connected && st.is_on === false));
+
+    if (!st.ok) {
+      showView("nobridge");
+      if (!busy) setMsg(location.protocol === "file:"
+        ? "目前是直接開啟 HTML 檔案，無法控制電視。請在電腦執行 python tv_bridge.py，再用它顯示的網址（http://…:8765）開啟。"
+        : st.error, "error");
+      $("form-setup").hidden = true;
+      $("form-pair").hidden = true;
+      return;
     }
-  }, 200);
+
+    $("form-setup").hidden = false;
+    $("form-setup").querySelector("button").textContent = st.paired ? "重新配對" : "開始配對";
+    if (st.host && !$("ip").value && document.activeElement !== $("ip")) $("ip").value = st.host;
+
+    if (st.pairing) {
+      showView("pairing");
+      $("form-pair").hidden = false;
+      if (!busy) setMsg("電視上應該出現配對碼，請輸入後按「確認配對」。");
+    } else if (!st.host || !st.paired) {
+      showView("setup");
+      $("form-pair").hidden = true;
+      if (!busy) setMsg("請輸入電視的 IP 位址並按「開始配對」。IP 可在電視的「設定 → 網路與網際網路」裡找到。");
+    } else if (!st.connected) {
+      showView("connecting");
+      $("form-pair").hidden = true;
+      $("connecting-host").textContent = st.host;
+      if (!busy) setMsg(`正在連線到 ${st.host}… 若一直連不上，請確認電視已開機（或已開啟網路待機），且與電腦在同一個 Wi-Fi。`);
+    } else {
+      showView("connected");
+      $("form-pair").hidden = true;
+      const dev = st.device;
+      $("dev-name").textContent = dev ? `${dev.manufacturer} ${dev.model}` : "Android TV";
+      const power = st.is_on === false ? "待機中" : st.is_on ? "開啟" : "—";
+      $("dev-state").textContent = `電源：${power}　·　目前 App：${st.current_app || "—"}`;
+      $("dev-host").textContent = "CONNECTED · " + st.host;
+      if (!busy) setMsg(`已連線到 ${dev ? dev.manufacturer + " " + dev.model : st.host}，可以開始使用遙控器。`, "ok");
+
+      const v = st.volume;
+      if (v && v.max) {
+        const pct = v.muted ? 0 : Math.round(v.level / v.max * 100);
+        $("vol-num").textContent = v.muted ? "靜音" : v.level;
+        $("vol-fill").style.height = pct + "%";
+        const key = `${v.level}/${v.muted}`;
+        if (lastVolKey && key !== lastVolKey) flash("osd-vol");
+        lastVolKey = key;
+      }
+    }
+  }
+
+  async function poll() {
+    if (location.protocol === "file:") {
+      applyStatus({ ok: false });
+      return;   // 檔案模式不輪詢
+    }
+    applyStatus(await api("/api/status"));
+    setTimeout(poll, 1500);
+  }
+
+  // ── 配對流程 ──
+  $("form-setup").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const host = $("ip").value.trim();
+    if (!host) { setMsg("請先輸入電視的 IP 位址。", "error"); return; }
+    const btn = e.submitter; btn.disabled = true; busy = true;
+    setMsg(`正在連線到 ${host} 並要求配對…`);
+    const r = await api("/api/setup", { host });
+    btn.disabled = false; busy = false;
+    if (r.ok) {
+      setMsg(r.message + "，請在下方輸入。");
+      $("form-pair").hidden = false;
+      $("code").focus();
+    } else {
+      setMsg(r.error, "error");
+      busy = true; setTimeout(() => { busy = false; }, 6000);   // 讓錯誤訊息停留一下
+    }
+  });
+
+  $("form-pair").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const code = $("code").value.trim().toUpperCase();
+    if (code.length !== 6) { setMsg("配對碼是 6 個字元，請再確認一次。", "error"); return; }
+    const btn = e.submitter; btn.disabled = true; busy = true;
+    setMsg("正在確認配對碼…");
+    const r = await api("/api/pair", { code });
+    btn.disabled = false; busy = false;
+    if (r.ok) { $("code").value = ""; setMsg(r.message, "ok"); }
+    else { setMsg(r.error, "error"); busy = true; setTimeout(() => { busy = false; }, 6000); }
+  });
+
+  $("form-text").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = $("text").value;
+    if (!text) return;
+    const r = await api("/api/text", { text });
+    if (r.ok) { toast("已送出文字"); $("text").value = ""; }
+    else setMsg(r.error, "error");
+  });
 
   // ── 音效 click sound ──
   let audioCtx;
@@ -891,108 +961,45 @@
     setTimeout(() => jewel.classList.remove("lit"), 140);
   }
 
-  // ── 按鍵動作 actions ──
-  function moveFocus(dir) {
-    if (state.view === "home") {
-      const cols = 3, n = TILES.length;
-      let { focus } = state;
-      if (dir === "left")  focus = focus % cols === 0 ? focus + cols - 1 : focus - 1;
-      if (dir === "right") focus = focus % cols === cols - 1 ? focus - cols + 1 : focus + 1;
-      if (dir === "up")    focus = (focus - cols + n) % n;
-      if (dir === "down")  focus = (focus + cols) % n;
-      state.focus = focus;
-    } else if (["guide", "input", "settings"].includes(state.view)) {
-      const len = state.view === "input" ? INPUTS.length : state.view === "settings" ? SETTINGS.length : 4;
-      if (dir === "up")   state.listFocus = (state.listFocus - 1 + len) % len;
-      if (dir === "down") state.listFocus = (state.listFocus + 1) % len;
-    } else if (state.view === "app") {
-      if (dir === "left")  { state.progress = Math.max(0, state.progress - 5); toast("◀ 倒退 5%"); }
-      if (dir === "right") { state.progress = Math.min(100, state.progress + 5); toast("快進 5% ▶"); }
-    }
-  }
-
-  function openApp(app) {
-    state.current = app;
-    state.view = "app";
-    state.playing = true;
-    state.progress = 0;
-    toast(`開啟「${app.name}」· ${app.en}`);
-  }
-
-  function goView(view) {
-    state.view = state.view === view ? "home" : view;
-    state.listFocus = view === "input" ? state.input : 0;
-  }
-
-  let listenTimer;
-  function assistant() {
-    const box = $("listening");
-    clearTimeout(listenTimer);
-    $("listening-text").textContent = "請說話… Listening";
-    box.classList.add("show");
-    jewel.classList.add("mic");
-    listenTimer = setTimeout(() => {
-      $("listening-text").textContent = "（示範模式：未連接語音服務）";
-      listenTimer = setTimeout(() => { box.classList.remove("show"); jewel.classList.remove("mic"); }, 1400);
-    }, 1800);
-  }
-
-  function handle(key) {
+  // ── 送出按鍵 ──
+  async function press(key, quiet) {
     blink();
-    click(key === "power" ? 900 : 1800);
-    if (navigator.vibrate) navigator.vibrate(10);
+    if (!quiet) { click(key === "power" ? 900 : 1800); if (navigator.vibrate) navigator.vibrate(10); }
 
-    if (key === "power") {
-      state.on = !state.on;
-      $("screen").classList.toggle("off", !state.on);
-      if (state.on) { state.view = "home"; render(); toast("歡迎回來 · Welcome"); }
+    if (!last || !last.ok || !last.connected) {
+      toast("尚未連線電視", 1500);
       return;
     }
-    if (!state.on) return;
-
-    switch (key) {
-      case "up": case "down": case "left": case "right":
-        moveFocus(key); break;
-      case "ok":
-        if (state.view === "home") openApp(TILES[state.focus]);
-        else if (state.view === "app") { state.playing = !state.playing; }
-        else if (state.view === "input") { state.input = state.listFocus; toast("切換至 " + INPUTS[state.input]); state.view = "home"; }
-        else if (state.view === "guide") { state.ch = ((state.ch - 1 + state.listFocus) % 99) + 1; toast("轉台至 " + PROGRAMMES[(state.ch - 1) % PROGRAMMES.length]); flash("osd-ch"); state.view = "home"; }
-        else if (state.view === "settings") { toast(SETTINGS[state.listFocus][0] + "（示範）"); }
-        break;
-      case "back":
-        if (state.view === "home") toast("已在首頁 · Home");
-        else state.view = "home";
-        break;
-      case "home":
-        state.view = "home"; toast("首頁 · Home"); break;
-      case "guide":    goView("guide"); break;
-      case "input":    goView("input"); break;
-      case "settings": goView("settings"); break;
-      case "volup":   state.muted = false; state.vol = Math.min(100, state.vol + 5); flash("osd-vol"); break;
-      case "voldown": state.muted = false; state.vol = Math.max(0, state.vol - 5); flash("osd-vol"); break;
-      case "mute":    state.muted = !state.muted; flash("osd-vol"); toast(state.muted ? "靜音 · Muted" : "取消靜音 · Unmuted"); break;
-      case "chup":    state.ch = state.ch % 99 + 1; flash("osd-ch"); break;
-      case "chdown":  state.ch = (state.ch + 97) % 99 + 1; flash("osd-ch"); break;
-      case "play":
-        if (state.view === "app") state.playing = !state.playing;
-        else toast("請先選擇節目 · Select a title");
-        break;
-      case "rew":
-        if (state.view === "app") { state.progress = Math.max(0, state.progress - 10); toast("◀◀ 倒轉"); } break;
-      case "ff":
-        if (state.view === "app") { state.progress = Math.min(100, state.progress + 10); toast("快轉 ▶▶"); } break;
-      case "app1": case "app2":
-        openApp(APPS[key]); break;
-      case "assistant":
-        assistant(); break;
+    let r;
+    if (key === "app1" || key === "app2") {
+      r = await api("/api/app", { link: apps[key].link });
+      if (r.ok) toast("開啟 " + apps[key].name);
+    } else {
+      if (!quiet) toast(LABELS[key] || key, 700);
+      r = await api("/api/key", { key });
     }
-    render();
+    if (!r.ok) { toast(r.error, 2500); }
   }
 
-  // ── 事件綁定 events ──
+  // 方向與音量／頻道鍵：按住會連續送出
+  let repeatTimer = null, repeatDelay = null;
+  function stopRepeat() { clearTimeout(repeatDelay); clearInterval(repeatTimer); repeatDelay = repeatTimer = null; }
+
   document.querySelectorAll("[data-key]").forEach(btn => {
-    btn.addEventListener("click", () => handle(btn.dataset.key));
+    const key = btn.dataset.key;
+    if (REPEATABLE.has(key)) {
+      btn.addEventListener("pointerdown", (e) => {
+        if (e.button !== 0) return;
+        btn.setPointerCapture(e.pointerId);
+        stopRepeat();
+        press(key);
+        repeatDelay = setTimeout(() => { repeatTimer = setInterval(() => press(key, true), 150); }, 450);
+      });
+      ["pointerup", "pointercancel", "lostpointercapture"].forEach(ev => btn.addEventListener(ev, stopRepeat));
+      btn.addEventListener("click", (e) => { if (e.detail === 0) press(key); }); // 鍵盤聚焦時按 Enter/Space
+    } else {
+      btn.addEventListener("click", () => press(key));
+    }
   });
 
   const KEYMAP = {
@@ -1005,17 +1012,19 @@
     g: "guide", G: "guide", i: "input", I: "input",
   };
   document.addEventListener("keydown", (e) => {
-    if (e.target.matches("input")) return;
+    if (e.target.matches("input, textarea, select, summary")) return;
     if (e.target.matches("button") && (e.key === "Enter" || e.key === " ")) return; // 讓聚焦中的按鈕自行處理
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
     const key = KEYMAP[e.key];
     if (!key) return;
     e.preventDefault();
+    if (e.repeat && !REPEATABLE.has(key)) return;
     const btn = document.querySelector(`[data-key="${key}"]`);
     if (btn) { btn.classList.add("pressed"); setTimeout(() => btn.classList.remove("pressed"), 120); }
-    handle(key);
+    press(key, e.repeat);
   });
 
-  render();
+  poll();
 })();
 </script>
 </body>

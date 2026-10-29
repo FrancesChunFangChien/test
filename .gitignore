@@ -1,0 +1,6 @@
+# 配對後產生的憑證與設定（含私鑰，不要上傳）
+atv_cert.pem
+atv_key.pem
+atv_config.json
+__pycache__/
+.venv/
